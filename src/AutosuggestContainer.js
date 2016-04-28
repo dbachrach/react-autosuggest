@@ -110,6 +110,10 @@ export default class AutosuggestContainer extends Component {
     this.input = input;
   }
 
+  getAutosuggest() {
+    return this.refs.autosuggester.getWrappedInstance();
+  }
+
   render() {
     const {
       multiSection, shouldRenderSuggestions, suggestions,
@@ -132,6 +136,7 @@ export default class AutosuggestContainer extends Component {
                    focusInputOnSuggestionClick={focusInputOnSuggestionClick}
                    theme={mapToAutowhateverTheme(theme)}
                    id={id}
+                   ref="autosuggester"
                    inputRef={this.saveInput}
                    store={this.store} />
     );

@@ -172,6 +172,10 @@ class Autosuggest extends Component {
     }
   }
 
+  setFocusedSuggestion(sectionIndex, itemIndex) {
+    this.props.updateFocusedSuggestion(sectionIndex, itemIndex);
+  }
+
   render() {
     const {
       suggestions, renderSuggestion, inputProps, shouldRenderSuggestions,
@@ -232,7 +236,8 @@ class Autosuggest extends Component {
             event.preventDefault();
             break;
 
-          case 'Enter': {
+          case 'Tab':
+          case 'Enter':
             const focusedSuggestion = this.getFocusedSuggestion();
 
             if (focusedSuggestion !== null) {
@@ -244,9 +249,10 @@ class Autosuggest extends Component {
                 method: 'enter'
               });
               this.maybeCallOnSuggestionsUpdateRequested({ value, reason: 'enter' });
+            } else {
+              event.preventDefault();
             }
             break;
-          }
 
           case 'Escape':
             if (isOpen) {
@@ -340,4 +346,4 @@ class Autosuggest extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Autosuggest);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Autosuggest);
