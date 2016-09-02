@@ -69,6 +69,7 @@ export default class AutosuggestContainer extends Component {
     renderSectionTitle: PropTypes.func,
     getSectionSuggestions: PropTypes.func,
     focusInputOnSuggestionClick: PropTypes.bool,
+    menuStatusChanged: PropTypes.func,
     theme: PropTypes.object,
     id: PropTypes.string
   };
@@ -119,7 +120,8 @@ export default class AutosuggestContainer extends Component {
       multiSection, shouldRenderSuggestions, suggestions,
       onSuggestionsUpdateRequested, getSuggestionValue, renderSuggestion,
       renderSectionTitle, getSectionSuggestions, inputProps,
-      onSuggestionSelected, focusInputOnSuggestionClick, theme, id
+      onSuggestionSelected, focusInputOnSuggestionClick, menuStatusChanged,
+      theme, id
     } = this.props;
 
     return (
@@ -134,6 +136,7 @@ export default class AutosuggestContainer extends Component {
                    inputProps={inputProps}
                    onSuggestionSelected={onSuggestionSelected}
                    focusInputOnSuggestionClick={focusInputOnSuggestionClick}
+                   menuStatusChanged={menuStatusChanged}
                    theme={mapToAutowhateverTheme(theme)}
                    id={id}
                    ref="autosuggester"

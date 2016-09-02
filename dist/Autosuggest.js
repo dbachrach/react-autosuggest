@@ -68,13 +68,30 @@ var Autosuggest = function (_Component) {
   function Autosuggest() {
     _classCallCheck(this, Autosuggest);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autosuggest).call(this));
+    var _this = _possibleConstructorReturn(this, (Autosuggest.__proto__ || Object.getPrototypeOf(Autosuggest)).call(this));
 
     _this.saveInput = _this.saveInput.bind(_this);
     return _this;
   }
 
   _createClass(Autosuggest, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
+
+      this.raiseMenuChangedEvent(isOpen);
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      var isOpenPrev = prevProps.isFocused && !prevProps.isCollapsed && this.willRenderSuggestions(prevProps);
+      var isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
+
+      if (isOpen !== isOpenPrev) {
+        this.raiseMenuChangedEvent(isOpen);
+      }
+    }
+  }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
       if (nextProps.suggestions !== this.props.suggestions) {
@@ -90,6 +107,15 @@ var Autosuggest = function (_Component) {
         if (isCollapsed && lastAction !== 'click' && lastAction !== 'enter' && suggestions.length > 0 && shouldRenderSuggestions(value)) {
           revealSuggestions();
         }
+      }
+    }
+  }, {
+    key: 'raiseMenuChangedEvent',
+    value: function raiseMenuChangedEvent(isOpen) {
+      var handler = this.props.menuStatusChanged;
+
+      if (handler) {
+        handler(isOpen);
       }
     }
   }, {
@@ -183,10 +209,10 @@ var Autosuggest = function (_Component) {
   }, {
     key: 'willRenderSuggestions',
     value: function willRenderSuggestions() {
-      var _props4 = this.props;
-      var suggestions = _props4.suggestions;
-      var inputProps = _props4.inputProps;
-      var shouldRenderSuggestions = _props4.shouldRenderSuggestions;
+      var props = arguments.length <= 0 || arguments[0] === undefined ? this.props : arguments[0];
+      var suggestions = props.suggestions;
+      var inputProps = props.inputProps;
+      var shouldRenderSuggestions = props.shouldRenderSuggestions;
       var value = inputProps.value;
 
 
@@ -212,29 +238,29 @@ var Autosuggest = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props5 = this.props;
-      var suggestions = _props5.suggestions;
-      var renderSuggestion = _props5.renderSuggestion;
-      var inputProps = _props5.inputProps;
-      var shouldRenderSuggestions = _props5.shouldRenderSuggestions;
-      var onSuggestionSelected = _props5.onSuggestionSelected;
-      var multiSection = _props5.multiSection;
-      var renderSectionTitle = _props5.renderSectionTitle;
-      var id = _props5.id;
-      var getSectionSuggestions = _props5.getSectionSuggestions;
-      var focusInputOnSuggestionClick = _props5.focusInputOnSuggestionClick;
-      var theme = _props5.theme;
-      var isFocused = _props5.isFocused;
-      var isCollapsed = _props5.isCollapsed;
-      var focusedSectionIndex = _props5.focusedSectionIndex;
-      var focusedSuggestionIndex = _props5.focusedSuggestionIndex;
-      var valueBeforeUpDown = _props5.valueBeforeUpDown;
-      var inputFocused = _props5.inputFocused;
-      var inputBlurred = _props5.inputBlurred;
-      var inputChanged = _props5.inputChanged;
-      var updateFocusedSuggestion = _props5.updateFocusedSuggestion;
-      var revealSuggestions = _props5.revealSuggestions;
-      var closeSuggestions = _props5.closeSuggestions;
+      var _props4 = this.props;
+      var suggestions = _props4.suggestions;
+      var renderSuggestion = _props4.renderSuggestion;
+      var inputProps = _props4.inputProps;
+      var shouldRenderSuggestions = _props4.shouldRenderSuggestions;
+      var onSuggestionSelected = _props4.onSuggestionSelected;
+      var multiSection = _props4.multiSection;
+      var renderSectionTitle = _props4.renderSectionTitle;
+      var id = _props4.id;
+      var getSectionSuggestions = _props4.getSectionSuggestions;
+      var focusInputOnSuggestionClick = _props4.focusInputOnSuggestionClick;
+      var theme = _props4.theme;
+      var isFocused = _props4.isFocused;
+      var isCollapsed = _props4.isCollapsed;
+      var focusedSectionIndex = _props4.focusedSectionIndex;
+      var focusedSuggestionIndex = _props4.focusedSuggestionIndex;
+      var valueBeforeUpDown = _props4.valueBeforeUpDown;
+      var inputFocused = _props4.inputFocused;
+      var inputBlurred = _props4.inputBlurred;
+      var inputChanged = _props4.inputChanged;
+      var updateFocusedSuggestion = _props4.updateFocusedSuggestion;
+      var revealSuggestions = _props4.revealSuggestions;
+      var closeSuggestions = _props4.closeSuggestions;
       var value = inputProps.value;
       var _onBlur = inputProps.onBlur;
       var _onFocus = inputProps.onFocus;
@@ -442,6 +468,7 @@ Autosuggest.propTypes = {
   inputChanged: _react.PropTypes.func.isRequired,
   updateFocusedSuggestion: _react.PropTypes.func.isRequired,
   revealSuggestions: _react.PropTypes.func.isRequired,
-  closeSuggestions: _react.PropTypes.func.isRequired
+  closeSuggestions: _react.PropTypes.func.isRequired,
+  menuStatusChanged: _react.PropTypes.func
 };
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Autosuggest);

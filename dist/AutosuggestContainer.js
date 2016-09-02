@@ -77,7 +77,7 @@ var AutosuggestContainer = function (_Component) {
   function AutosuggestContainer() {
     _classCallCheck(this, AutosuggestContainer);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AutosuggestContainer).call(this));
+    var _this = _possibleConstructorReturn(this, (AutosuggestContainer.__proto__ || Object.getPrototypeOf(AutosuggestContainer)).call(this));
 
     var initialState = {
       isFocused: false,
@@ -119,6 +119,7 @@ var AutosuggestContainer = function (_Component) {
       var inputProps = _props.inputProps;
       var onSuggestionSelected = _props.onSuggestionSelected;
       var focusInputOnSuggestionClick = _props.focusInputOnSuggestionClick;
+      var menuStatusChanged = _props.menuStatusChanged;
       var theme = _props.theme;
       var id = _props.id;
 
@@ -134,6 +135,7 @@ var AutosuggestContainer = function (_Component) {
         inputProps: inputProps,
         onSuggestionSelected: onSuggestionSelected,
         focusInputOnSuggestionClick: focusInputOnSuggestionClick,
+        menuStatusChanged: menuStatusChanged,
         theme: mapToAutowhateverTheme(theme),
         id: id,
         ref: 'autosuggester',
@@ -167,6 +169,7 @@ AutosuggestContainer.propTypes = {
   renderSectionTitle: _react.PropTypes.func,
   getSectionSuggestions: _react.PropTypes.func,
   focusInputOnSuggestionClick: _react.PropTypes.bool,
+  menuStatusChanged: _react.PropTypes.func,
   theme: _react.PropTypes.object,
   id: _react.PropTypes.string
 };

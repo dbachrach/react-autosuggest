@@ -67,13 +67,29 @@ class Autosuggest extends Component {
     inputChanged: PropTypes.func.isRequired,
     updateFocusedSuggestion: PropTypes.func.isRequired,
     revealSuggestions: PropTypes.func.isRequired,
-    closeSuggestions: PropTypes.func.isRequired
+    closeSuggestions: PropTypes.func.isRequired,
+    menuStatusChanged: PropTypes.func
   };
 
   constructor() {
     super();
 
     this.saveInput = this.saveInput.bind(this);
+  }
+
+  componentDidMount() {
+    const isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
+
+    this.raiseMenuChangedEvent(isOpen);
+  }
+
+  componentDidUpdate(prevProps) {
+    const isOpenPrev = prevProps.isFocused && !prevProps.isCollapsed && this.willRenderSuggestions(prevProps);
+    const isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
+
+    if (isOpen !== isOpenPrev) {
+      this.raiseMenuChangedEvent(isOpen);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -86,6 +102,14 @@ class Autosuggest extends Component {
           suggestions.length > 0 && shouldRenderSuggestions(value)) {
         revealSuggestions();
       }
+    }
+  }
+
+  raiseMenuChangedEvent(isOpen) {
+    const handler = this.props.menuStatusChanged;
+
+    if (handler) {
+      handler(isOpen);
     }
   }
 
@@ -156,8 +180,8 @@ class Autosuggest extends Component {
     }
   }
 
-  willRenderSuggestions() {
-    const { suggestions, inputProps, shouldRenderSuggestions } = this.props;
+  willRenderSuggestions(props = this.props) {
+    const { suggestions, inputProps, shouldRenderSuggestions } = props;
     const { value } = inputProps;
 
     return suggestions.length > 0 && shouldRenderSuggestions(value);
