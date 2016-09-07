@@ -141,40 +141,42 @@
 	var App = function (_React$Component) {
 	  _inherits(App, _React$Component);
 
+	  // eslint-disable-line no-undef
 	  function App() {
 	    _classCallCheck(this, App);
 
 	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
+	    _this.onChange = function (event, _ref) {
+	      var newValue = _ref.newValue;
+
+	      _this.setState({
+	        value: newValue
+	      });
+	    };
+
+	    _this.onSuggestionsFetchRequested = function (_ref2) {
+	      var value = _ref2.value;
+
+	      _this.setState({
+	        suggestions: getSuggestions(value)
+	      });
+	    };
+
+	    _this.onSuggestionsClearRequested = function () {
+	      _this.setState({
+	        suggestions: []
+	      });
+	    };
+
 	    _this.state = {
 	      value: '',
 	      suggestions: getSuggestions('')
 	    };
-
-	    _this.onChange = _this.onChange.bind(_this);
-	    _this.onSuggestionsUpdateRequested = _this.onSuggestionsUpdateRequested.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(App, [{
-	    key: 'onChange',
-	    value: function onChange(event, _ref) {
-	      var newValue = _ref.newValue;
-
-	      this.setState({
-	        value: newValue
-	      });
-	    }
-	  }, {
-	    key: 'onSuggestionsUpdateRequested',
-	    value: function onSuggestionsUpdateRequested(_ref2) {
-	      var value = _ref2.value;
-
-	      this.setState({
-	        suggestions: getSuggestions(value)
-	      });
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _state = this.state;
@@ -187,8 +189,10 @@
 	        onChange: this.onChange
 	      };
 
-	      return React.createElement(Autosuggest, { suggestions: suggestions // eslint-disable-line react/jsx-no-undef
-	        , onSuggestionsUpdateRequested: this.onSuggestionsUpdateRequested,
+	      return React.createElement(Autosuggest // eslint-disable-line react/jsx-no-undef
+	      , { suggestions: suggestions,
+	        onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
+	        onSuggestionsClearRequested: this.onSuggestionsClearRequested,
 	        getSuggestionValue: getSuggestionValue,
 	        renderSuggestion: renderSuggestion,
 	        inputProps: inputProps });
@@ -198,7 +202,7 @@
 	  return App;
 	}(React.Component);
 
-	ReactDOM.render(React.createElement(App, null), document.getElementById('app'));
+	ReactDOM.render(React.createElement(App, null), document.getElementById('app')); // eslint-disable-line no-undef
 
 /***/ }
 /******/ ]);

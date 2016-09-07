@@ -28,6 +28,10 @@ export const renderSuggestion = sinon.spy(suggestion => {
   );
 });
 
+function shouldRenderSuggestions() {
+  return true;
+}
+
 export const onChange = sinon.spy((event, { newValue }) => {
   app.setState({
     value: newValue
@@ -35,13 +39,20 @@ export const onChange = sinon.spy((event, { newValue }) => {
 });
 
 export const onBlur = sinon.spy();
-export const onSuggestionSelected = sinon.spy();
 
-export const onSuggestionsUpdateRequested = sinon.spy(({ value }) => {
+export const onSuggestionsFetchRequested = sinon.spy(({ value }) => {
   app.setState({
     suggestions: getMatchingLanguages(value)
   });
 });
+
+export const onSuggestionsClearRequested = sinon.spy(() => {
+  app.setState({
+    suggestions: []
+  });
+});
+
+export const onSuggestionSelected = sinon.spy();
 
 export const renderSectionTitle = sinon.spy(section => {
   return (
@@ -53,6 +64,12 @@ export const getSectionSuggestions = sinon.spy(section => {
   return section.languages;
 });
 
+let focusFirstSuggestion = false;
+
+export function setFocusFirstSuggestion(value) {
+  focusFirstSuggestion = value;
+}
+
 export default class AutosuggestApp extends Component {
   constructor() {
     super();
@@ -61,9 +78,18 @@ export default class AutosuggestApp extends Component {
 
     this.state = {
       value: '',
-      suggestions: getMatchingLanguages('')
+      suggestions: []
     };
   }
+
+  onClearMouseDown = event => {
+    event.preventDefault();
+
+    this.setState({
+      value: '',
+      suggestions: getMatchingLanguages('')
+    });
+  };
 
   render() {
     const { value, suggestions } = this.state;
@@ -74,17 +100,22 @@ export default class AutosuggestApp extends Component {
     };
 
     return (
-      <Autosuggest multiSection={true}
-                   suggestions={suggestions}
-                   onSuggestionsUpdateRequested={onSuggestionsUpdateRequested}
-                   getSuggestionValue={getSuggestionValue}
-                   renderSuggestion={renderSuggestion}
-                   inputProps={inputProps}
-                   shouldRenderSuggestions={() => true}
-                   onSuggestionSelected={onSuggestionSelected}
-                   renderSectionTitle={renderSectionTitle}
-                   getSectionSuggestions={getSectionSuggestions}
-                   focusInputOnSuggestionClick={false} />
+      <div>
+        <button onMouseDown={this.onClearMouseDown}>Clear</button>
+        <Autosuggest
+          multiSection={true}
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          onSuggestionSelected={onSuggestionSelected}
+          getSuggestionValue={getSuggestionValue}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputProps}
+          shouldRenderSuggestions={shouldRenderSuggestions}
+          renderSectionTitle={renderSectionTitle}
+          getSectionSuggestions={getSectionSuggestions}
+          focusFirstSuggestion={focusFirstSuggestion} />
+      </div>
     );
   }
 }
