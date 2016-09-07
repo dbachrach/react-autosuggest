@@ -294,10 +294,6 @@ class Autosuggest extends Component {
     };
   };
 
-  setFocusedSuggestion(sectionIndex, itemIndex) {
-    this.props.updateFocusedSuggestion(sectionIndex, itemIndex);
-  }
-
   render() {
     const {
       suggestions, renderSuggestionsContainer, onSuggestionsFetchRequested,
@@ -406,6 +402,9 @@ class Autosuggest extends Component {
                 this.justSelectedSuggestion = false;
               });
             }
+            else {
+              event.preventDefault();
+            }
 
             break;
 
@@ -474,4 +473,4 @@ class Autosuggest extends Component {
   }
 }
 
-export default connect(mapStateToProps, actionCreators, null, { withRef: true })(Autosuggest);
+export default connect(mapStateToProps, actionCreators)(Autosuggest);

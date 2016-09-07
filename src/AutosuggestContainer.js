@@ -130,10 +130,6 @@ export default class AutosuggestContainer extends Component {
     this.input = input;
   };
 
-  getAutosuggest() {
-    return this.refs.autosuggester.getWrappedInstance();
-  }
-
   render() {
     const {
       suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested,
