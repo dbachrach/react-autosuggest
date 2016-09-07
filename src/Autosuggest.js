@@ -52,21 +52,10 @@ class Autosuggest extends Component {
 
   componentDidMount() {
     document.addEventListener('mousedown', this.onDocumentMouseDown);
-  }
 
-  componentDidMount() {
     const isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
 
     this.raiseMenuChangedEvent(isOpen);
-  }
-
-  componentDidUpdate(prevProps) {
-    const isOpenPrev = prevProps.isFocused && !prevProps.isCollapsed && this.willRenderSuggestions(prevProps);
-    const isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
-
-    if (isOpen !== isOpenPrev) {
-      this.raiseMenuChangedEvent(isOpen);
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -95,16 +84,25 @@ class Autosuggest extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const isOpenPrev = prevProps.isFocused && !prevProps.isCollapsed && this.willRenderSuggestions(prevProps);
+    const isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
+
+    if (isOpen !== isOpenPrev) {
+      this.raiseMenuChangedEvent(isOpen);
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.onDocumentMouseDown);
+  }
+
   raiseMenuChangedEvent(isOpen) {
     const handler = this.props.menuStatusChanged;
 
     if (handler) {
       handler(isOpen);
     }
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('mousedown', this.onDocumentMouseDown);
   }
 
   getSuggestion(sectionIndex, suggestionIndex) {
@@ -377,7 +375,7 @@ class Autosuggest extends Component {
             break;
 
           case 'Tab':
-          case 'Enter':
+          case 'Enter': {
             const focusedSuggestion = this.getFocusedSuggestion();
 
             if (isOpen && !alwaysRenderSuggestions) {
@@ -401,13 +399,12 @@ class Autosuggest extends Component {
               setTimeout(() => {
                 this.justSelectedSuggestion = false;
               });
-            }
-            else {
+            } else {
               event.preventDefault();
             }
 
             break;
-
+          }
           case 'Escape': {
             if (isOpen) {
               // If input.type === 'search', the browser clears the input

@@ -6,12 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-exports.inputFocused = inputFocused;
-exports.inputBlurred = inputBlurred;
-exports.inputChanged = inputChanged;
-exports.updateFocusedSuggestion = updateFocusedSuggestion;
-exports.revealSuggestions = revealSuggestions;
-exports.closeSuggestions = closeSuggestions;
 exports.default = reducer;
 var INPUT_FOCUSED = 'INPUT_FOCUSED';
 var INPUT_BLURRED = 'INPUT_BLURRED';
@@ -27,17 +21,17 @@ function inputFocused(shouldRenderSuggestions) {
   };
 }
 
-function inputBlurred() {
+function inputBlurred(shouldRenderSuggestions) {
   return {
-    type: INPUT_BLURRED
+    type: INPUT_BLURRED,
+    shouldRenderSuggestions: shouldRenderSuggestions
   };
 }
 
-function inputChanged(shouldRenderSuggestions, lastAction) {
+function inputChanged(shouldRenderSuggestions) {
   return {
     type: INPUT_CHANGED,
-    shouldRenderSuggestions: shouldRenderSuggestions,
-    lastAction: lastAction
+    shouldRenderSuggestions: shouldRenderSuggestions
   };
 }
 
@@ -56,12 +50,20 @@ function revealSuggestions() {
   };
 }
 
-function closeSuggestions(lastAction) {
+function closeSuggestions() {
   return {
-    type: CLOSE_SUGGESTIONS,
-    lastAction: lastAction
+    type: CLOSE_SUGGESTIONS
   };
 }
+
+var actionCreators = exports.actionCreators = {
+  inputFocused: inputFocused,
+  inputBlurred: inputBlurred,
+  inputChanged: inputChanged,
+  updateFocusedSuggestion: updateFocusedSuggestion,
+  revealSuggestions: revealSuggestions,
+  closeSuggestions: closeSuggestions
+};
 
 function reducer(state, action) {
   switch (action.type) {
@@ -77,7 +79,7 @@ function reducer(state, action) {
         focusedSectionIndex: null,
         focusedSuggestionIndex: null,
         valueBeforeUpDown: null,
-        isCollapsed: true
+        isCollapsed: !action.shouldRenderSuggestions
       });
 
     case INPUT_CHANGED:
@@ -85,8 +87,7 @@ function reducer(state, action) {
         focusedSectionIndex: null,
         focusedSuggestionIndex: null,
         valueBeforeUpDown: null,
-        isCollapsed: !action.shouldRenderSuggestions,
-        lastAction: action.lastAction
+        isCollapsed: !action.shouldRenderSuggestions
       });
 
     case UPDATE_FOCUSED_SUGGESTION:
@@ -94,8 +95,14 @@ function reducer(state, action) {
         var value = action.value;
         var sectionIndex = action.sectionIndex;
         var suggestionIndex = action.suggestionIndex;
+        var valueBeforeUpDown = state.valueBeforeUpDown;
 
-        var valueBeforeUpDown = state.valueBeforeUpDown === null && typeof value !== 'undefined' ? value : state.valueBeforeUpDown;
+
+        if (suggestionIndex === null) {
+          valueBeforeUpDown = null;
+        } else if (valueBeforeUpDown === null && typeof value !== 'undefined') {
+          valueBeforeUpDown = value;
+        }
 
         return _extends({}, state, {
           focusedSectionIndex: sectionIndex,
@@ -114,8 +121,7 @@ function reducer(state, action) {
         focusedSectionIndex: null,
         focusedSuggestionIndex: null,
         valueBeforeUpDown: null,
-        isCollapsed: true,
-        lastAction: action.lastAction
+        isCollapsed: true
       });
 
     default:
