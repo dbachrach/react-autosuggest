@@ -4,6 +4,10 @@ import shallowEqualArrays from 'shallow-equal/arrays';
 import { actionCreators } from './redux';
 import Autowhatever from 'react-autowhatever';
 
+function extractTouchCoordinates({ changedTouches }) {
+  return { x: changedTouches[0].pageX, y: changedTouches[0].pageY };
+}
+
 function mapStateToProps(state) {
   return {
     isFocused: state.isFocused,
@@ -52,6 +56,9 @@ class Autosuggest extends Component {
 
   componentDidMount() {
     document.addEventListener('mousedown', this.onDocumentMouseDown);
+    document.addEventListener('touchstart', this.onDocumentTouchStart, false);
+    document.addEventListener('touchend', this.onDocumentTouchEnd, false);
+    document.addEventListener('mouseup', this.onDocumentMouseUp, false);
 
     const isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
 
@@ -95,6 +102,34 @@ class Autosuggest extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.onDocumentMouseDown);
+    document.removeEventListener('touchstart', this.onDocumentTouchStart, false);
+    document.removeEventListener('touchend', this.onDocumentTouchEnd, false);
+    document.removeEventListener('mouseup', this.onDocumentMouseUp, false);
+  }
+
+  onDocumentTouchStart = (event) => {
+    this.touchStart = this.touchStart || extractTouchCoordinates(event);
+  };
+
+  onDocumentTouchEnd = (event) => {
+    const { x, y } = extractTouchCoordinates(event);
+
+    if (this.props.isFocused && !this.justTouchedInput && !this.justClickedOnSuggestion &&
+      this.touchStart) {
+      const dx = Math.abs(x - this.touchStart.x);
+      const dy = Math.abs(y - this.touchStart.y);
+
+      if (dx < 20 && dy < 20) {
+        this.input.blur();
+      }
+    }
+    this.justTouchedInput = false;
+    this.touchStart = null;
+    setTimeout(() => this.justClickedOnSuggestion = false);
+  }
+
+  onDocumentMouseUp = () => {
+    setTimeout(() => this.justClickedOnSuggestion = false);
   }
 
   raiseMenuChangedEvent(isOpen) {
@@ -307,6 +342,7 @@ class Autosuggest extends Component {
     const items = (isOpen ? suggestions : []);
     const autowhateverInputProps = {
       ...inputProps,
+      onTouchStart: () => this.justTouchedInput = true,
       onFocus: event => {
         if (!this.justSelectedSuggestion && !this.justClickedOnSuggestionsContainer) {
           inputFocused(shouldRenderSuggestions(value));

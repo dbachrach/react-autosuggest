@@ -32,6 +32,12 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function extractTouchCoordinates(_ref) {
+  var changedTouches = _ref.changedTouches;
+
+  return { x: changedTouches[0].pageX, y: changedTouches[0].pageY };
+}
+
 function mapStateToProps(state) {
   return {
     isFocused: state.isFocused,
@@ -46,7 +52,7 @@ var Autosuggest = function (_Component) {
   _inherits(Autosuggest, _Component);
 
   function Autosuggest() {
-    var _ref;
+    var _ref2;
 
     var _temp, _this, _ret;
 
@@ -56,7 +62,33 @@ var Autosuggest = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Autosuggest.__proto__ || Object.getPrototypeOf(Autosuggest)).call.apply(_ref, [this].concat(args))), _this), _this.onDocumentMouseDown = function (event) {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = Autosuggest.__proto__ || Object.getPrototypeOf(Autosuggest)).call.apply(_ref2, [this].concat(args))), _this), _this.onDocumentTouchStart = function (event) {
+      _this.touchStart = _this.touchStart || extractTouchCoordinates(event);
+    }, _this.onDocumentTouchEnd = function (event) {
+      var _extractTouchCoordina = extractTouchCoordinates(event);
+
+      var x = _extractTouchCoordina.x;
+      var y = _extractTouchCoordina.y;
+
+
+      if (_this.props.isFocused && !_this.justTouchedInput && !_this.justClickedOnSuggestion && _this.touchStart) {
+        var dx = Math.abs(x - _this.touchStart.x);
+        var dy = Math.abs(y - _this.touchStart.y);
+
+        if (dx < 20 && dy < 20) {
+          _this.input.blur();
+        }
+      }
+      _this.justTouchedInput = false;
+      _this.touchStart = null;
+      setTimeout(function () {
+        return _this.justClickedOnSuggestion = false;
+      });
+    }, _this.onDocumentMouseUp = function () {
+      setTimeout(function () {
+        return _this.justClickedOnSuggestion = false;
+      });
+    }, _this.onDocumentMouseDown = function (event) {
       _this.justClickedOnSuggestionsContainer = false;
 
       var node = event.detail.target || // This is for testing only. Please show be a better way to emulate this.
@@ -86,9 +118,9 @@ var Autosuggest = function (_Component) {
 
         _this.suggestionsContainer = autowhatever.itemsContainer;
       }
-    }, _this.onSuggestionMouseEnter = function (event, _ref2) {
-      var sectionIndex = _ref2.sectionIndex;
-      var itemIndex = _ref2.itemIndex;
+    }, _this.onSuggestionMouseEnter = function (event, _ref3) {
+      var sectionIndex = _ref3.sectionIndex;
+      var itemIndex = _ref3.itemIndex;
 
       _this.props.updateFocusedSuggestion(sectionIndex, itemIndex);
     }, _this.resetFocusedSuggestion = function () {
@@ -165,9 +197,9 @@ var Autosuggest = function (_Component) {
 
       inputBlurred(shouldRenderSuggestions(value));
       onBlur && onBlur(_this.blurEvent, { focusedSuggestion: focusedSuggestion });
-    }, _this.itemProps = function (_ref3) {
-      var sectionIndex = _ref3.sectionIndex;
-      var itemIndex = _ref3.itemIndex;
+    }, _this.itemProps = function (_ref4) {
+      var sectionIndex = _ref4.sectionIndex;
+      var itemIndex = _ref4.itemIndex;
 
       return {
         'data-section-index': sectionIndex,
@@ -185,6 +217,9 @@ var Autosuggest = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       document.addEventListener('mousedown', this.onDocumentMouseDown);
+      document.addEventListener('touchstart', this.onDocumentTouchStart, false);
+      document.addEventListener('touchend', this.onDocumentTouchEnd, false);
+      document.addEventListener('mouseup', this.onDocumentMouseUp, false);
 
       var isOpen = this.props.isFocused && !this.props.isCollapsed && this.willRenderSuggestions();
 
@@ -229,6 +264,9 @@ var Autosuggest = function (_Component) {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       document.removeEventListener('mousedown', this.onDocumentMouseDown);
+      document.removeEventListener('touchstart', this.onDocumentTouchStart, false);
+      document.removeEventListener('touchend', this.onDocumentTouchEnd, false);
+      document.removeEventListener('mouseup', this.onDocumentMouseUp, false);
     }
   }, {
     key: 'raiseMenuChangedEvent',
@@ -364,6 +402,9 @@ var Autosuggest = function (_Component) {
       var isOpen = alwaysRenderSuggestions || isFocused && !isCollapsed && willRenderSuggestions;
       var items = isOpen ? suggestions : [];
       var autowhateverInputProps = _extends({}, inputProps, {
+        onTouchStart: function onTouchStart() {
+          return _this2.justTouchedInput = true;
+        },
         onFocus: function onFocus(event) {
           if (!_this2.justSelectedSuggestion && !_this2.justClickedOnSuggestionsContainer) {
             inputFocused(shouldRenderSuggestions(value));
