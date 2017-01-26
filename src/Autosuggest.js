@@ -288,6 +288,7 @@ class Autosuggest extends Component {
       suggestion: clickedSuggestion,
       suggestionValue: clickedSuggestionValue,
       sectionIndex,
+      suggestionIndex,
       method: 'click'
     });
 
@@ -425,6 +426,7 @@ class Autosuggest extends Component {
                 suggestion: focusedSuggestion,
                 suggestionValue: newValue,
                 sectionIndex: focusedSectionIndex,
+                suggestionIndex: focusedSuggestionIndex,
                 method: 'enter'
               });
 

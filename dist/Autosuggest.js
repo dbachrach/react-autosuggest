@@ -169,6 +169,7 @@ var Autosuggest = function (_Component) {
         suggestion: clickedSuggestion,
         suggestionValue: clickedSuggestionValue,
         sectionIndex: sectionIndex,
+        suggestionIndex: suggestionIndex,
         method: 'click'
       });
 
@@ -491,6 +492,7 @@ var Autosuggest = function (_Component) {
                     suggestion: focusedSuggestion,
                     suggestionValue: _newValue,
                     sectionIndex: focusedSectionIndex,
+                    suggestionIndex: focusedSuggestionIndex,
                     method: 'enter'
                   });
 
